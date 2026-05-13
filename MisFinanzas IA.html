@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<!-- saved from url=(0054)file:///C:/Users/etden/Downloads/misfinanzas-ia_2.html -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>MisFinanzas IA</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --accent: #F5C518;
+  --accent2: #4ADEAC;
+  --red: #FF5B5B;
+  --blue: #5B9BFF;
+  --purple: #A78BFA;
+  --orange: #FB923C;
+  --bg: #0A0A0A;
+  --s1: #141414;
+  --s2: #1E1E1E;
+  --s3: #282828;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #F0EDE8;
+  --muted: #666;
+  --muted2: #999;
+  --mono: 'Space Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; -webkit-font-smoothing: antialiased; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--s3); border-radius: 2px; }
+
+/* LAYOUT */
+.app { display: flex; flex-direction: column; height: 100vh; max-width: 480px; margin: 0 auto; position: relative; }
+
+/* TOPBAR */
+.topbar {
+  background: var(--s1);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 18px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+  position: sticky; top: 0; z-index: 100;
+}
+.logo { font-family: var(--mono); font-size: 14px; font-weight: 700; color: var(--accent); letter-spacing: 2px; }
+.logo em { color: var(--text); font-style: normal; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.fx-pill {
+  background: var(--s2); border: 1px solid var(--border2);
+  border-radius: 999px; padding: 4px 12px;
+  font-family: var(--mono); font-size: 11px;
+  color: var(--accent2); cursor: default;
+}
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent2); animation: blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* TABS */
+.tabs {
+  display: flex; background: var(--s1);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto; flex-shrink: 0;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  padding: 11px 15px;
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  color: var(--muted); cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap; letter-spacing: 0.5px;
+  transition: all 0.2s; flex-shrink: 0;
+}
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab:hover:not(.active) { color: var(--text); }
+
+/* CONTENT */
+.content { flex: 1; overflow-y: auto; padding: 16px; }
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* CARDS */
+.card {
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: 14px; padding: 16px; margin-bottom: 12px;
+}
+.card-accent { border-color: rgba(245,197,24,0.2); }
+
+/* SECTION TITLE */
+.stitle {
+  font-family: var(--mono); font-size: 9px; font-weight: 700;
+  color: var(--muted); letter-spacing: 2px; text-transform: uppercase;
+  margin: 18px 0 10px;
+}
+.stitle:first-child { margin-top: 0; }
+
+/* KPI GRID */
+.kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.kpi { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+.kpi-label { font-size: 10px; color: var(--muted); letter-spacing: 0.5px; margin-bottom: 6px; font-family: var(--mono); }
+.kpi-val { font-size: 20px; font-weight: 600; font-family: var(--mono); }
+.kpi-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+/* TRANSACTIONS */
+.tx { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; display: flex; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
+.tx-icon { width: 38px; height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+.tx-info { flex: 1; min-width: 0; }
+.tx-name { font-size: 13px; font-weight: 500; }
+.tx-meta { font-size: 11px; color: var(--muted); margin-top: 3px; }
+.tx-right { text-align: right; flex-shrink: 0; }
+.tx-amount { font-family: var(--mono); font-size: 13px; font-weight: 700; }
+.badge { font-size: 9px; padding: 2px 8px; border-radius: 999px; font-weight: 700; letter-spacing: 0.5px; display: inline-block; margin-top: 4px; font-family: var(--mono); }
+.badge-food { background: rgba(245,197,24,0.12); color: var(--accent); }
+.badge-ant { background: rgba(255,91,91,0.12); color: var(--red); }
+.badge-usa { background: rgba(91,155,255,0.12); color: var(--blue); }
+.badge-mx { background: rgba(251,146,60,0.12); color: var(--orange); }
+.badge-health { background: rgba(167,139,250,0.12); color: var(--purple); }
+.badge-fx { background: rgba(74,222,172,0.12); color: var(--accent2); }
+
+/* CAPTURE ZONE */
+.capture-zone {
+  background: var(--s1);
+  border: 1.5px dashed rgba(245,197,24,0.35);
+  border-radius: 16px; padding: 32px 20px;
+  text-align: center; cursor: pointer;
+  transition: all 0.25s; margin-bottom: 14px;
+  position: relative; overflow: hidden;
+}
+.capture-zone:hover { border-color: var(--accent); background: rgba(245,197,24,0.03); }
+.capture-zone.dragging { border-color: var(--accent2); background: rgba(74,222,172,0.05); }
+.capture-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.capture-icon { font-size: 40px; margin-bottom: 12px; display: block; }
+.capture-title { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+.capture-sub { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+/* BUTTONS */
+.btn { padding: 13px 16px; border-radius: 11px; border: 1px solid var(--border2); background: var(--s2); color: var(--text); font-family: var(--sans); font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; width: 100%; }
+.btn:hover { border-color: var(--accent); background: rgba(245,197,24,0.04); }
+.btn:active { transform: scale(0.98); }
+.btn-yellow { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; font-family: var(--mono); letter-spacing: 0.5px; }
+.btn-yellow:hover { background: #e6b800; border-color: #e6b800; }
+.btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.btn-small { font-size: 12px; padding: 10px 14px; }
+.btn-icon-lg { font-size: 22px; margin-bottom: 4px; display: block; flex-direction: column; }
+
+/* PROCESSING */
+.processing {
+  display: none; background: var(--s2);
+  border: 1px solid rgba(74,222,172,0.25);
+  border-radius: 14px; padding: 24px; text-align: center; margin-bottom: 14px;
+}
+.processing.show { display: block; }
+.proc-dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 14px; }
+.proc-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent2); animation: procpulse 1.2s infinite; }
+.proc-dot:nth-child(2) { animation-delay: 0.2s; }
+.proc-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes procpulse { 0%,80%,100%{opacity:0.2;transform:scale(0.8)} 40%{opacity:1;transform:scale(1)} }
+.proc-text { font-family: var(--mono); font-size: 11px; color: var(--accent2); letter-spacing: 1px; }
+.proc-step { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+/* AI RESULT */
+.ai-result { display: none; background: var(--s2); border: 1px solid rgba(74,222,172,0.2); border-radius: 14px; overflow: hidden; margin-bottom: 14px; }
+.ai-result.show { display: block; }
+.ai-result-header { background: rgba(74,222,172,0.07); padding: 12px 16px; border-bottom: 1px solid rgba(74,222,172,0.15); display: flex; align-items: center; gap: 8px; }
+.ai-result-title { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--accent2); letter-spacing: 1px; }
+.ai-result-body { padding: 14px 16px; }
+.meta-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.meta-chip { background: var(--s3); border: 1px solid var(--border2); border-radius: 8px; padding: 6px 10px; font-size: 11px; }
+.meta-chip strong { color: var(--accent); font-family: var(--mono); }
+
+/* PRODUCT LIST */
+.prod-list { margin-bottom: 14px; }
+.prod-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+.prod-item:last-child { border: none; }
+.prod-emoji { font-size: 16px; flex-shrink: 0; width: 24px; text-align: center; }
+.prod-info { flex: 1; min-width: 0; }
+.prod-name { font-size: 12px; font-weight: 500; }
+.prod-detail { font-size: 10px; color: var(--muted); margin-top: 2px; font-family: var(--mono); }
+.prod-price { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--accent); text-align: right; flex-shrink: 0; }
+.prod-price-mxn { font-size: 10px; color: var(--muted); text-align: right; margin-top: 1px; }
+
+/* CATEGORY PICKER */
+.cat-picker { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.cat-chip { background: var(--s2); border: 1px solid var(--border2); border-radius: 8px; padding: 7px 12px; font-size: 12px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
+.cat-chip:hover, .cat-chip.sel { border-color: var(--accent); color: var(--accent); }
+.cat-chip.sel { background: rgba(245,197,24,0.08); }
+
+/* INPUTS */
+.inp { background: var(--s2); border: 1px solid var(--border2); border-radius: 10px; padding: 11px 14px; color: var(--text); font-family: var(--sans); font-size: 14px; width: 100%; transition: border-color 0.2s; }
+.inp:focus { outline: none; border-color: var(--accent); }
+.inp::placeholder { color: var(--muted); }
+.inp-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; display: block; font-family: var(--mono); letter-spacing: 0.5px; }
+.inp-group { margin-bottom: 12px; }
+.inp-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+select.inp { cursor: pointer; }
+
+/* CASA DE CAMBIO */
+.fx-result { background: var(--s3); border: 1px solid var(--border2); border-radius: 10px; padding: 14px; margin-top: 12px; display: none; }
+.fx-result.show { display: block; }
+.fx-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+.fx-row:last-child { border: none; }
+.fx-label { color: var(--muted); }
+.fx-val { font-family: var(--mono); font-weight: 700; }
+
+/* COMPARADOR */
+.vs-card { background: var(--s1); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 12px; }
+.vs-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.vs-sides { display: grid; grid-template-columns: 1fr 1fr; }
+.vs-side { padding: 14px 16px; }
+.vs-side:first-child { border-right: 1px solid var(--border); }
+.vs-country { font-size: 11px; color: var(--muted); margin-bottom: 8px; font-family: var(--mono); }
+.vs-price { font-family: var(--mono); font-size: 22px; font-weight: 700; }
+.vs-conv { font-size: 11px; color: var(--muted); margin-top: 4px; font-family: var(--mono); }
+.vs-winner { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 999px; margin-top: 8px; display: none; font-family: var(--mono); }
+.vs-footer { padding: 10px 16px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+
+/* CATEGORIES CHART */
+.cat-bar { display: flex; flex-direction: column; gap: 10px; }
+.cat-bar-item { }
+.cat-bar-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; }
+.cat-bar-track { height: 5px; background: var(--s3); border-radius: 3px; }
+.cat-bar-fill { height: 5px; border-radius: 3px; transition: width 0.6s ease; }
+
+/* HISTORIAL */
+.hist-list { display: flex; flex-direction: column; gap: 8px; }
+
+/* ALERTS */
+.alert { border-radius: 12px; padding: 14px; margin-bottom: 12px; font-size: 12px; line-height: 1.6; }
+.alert-warn { background: rgba(255,91,91,0.07); border: 1px solid rgba(255,91,91,0.2); color: var(--red); }
+.alert-info { background: rgba(74,222,172,0.06); border: 1px solid rgba(74,222,172,0.18); color: var(--accent2); }
+.alert-tip { background: rgba(245,197,24,0.06); border: 1px solid rgba(245,197,24,0.18); color: var(--accent); }
+
+/* EMPTY */
+.empty { background: var(--s1); border: 1px dashed var(--border2); border-radius: 14px; padding: 30px 20px; text-align: center; }
+.empty-icon { font-size: 32px; margin-bottom: 10px; }
+.empty-title { font-size: 13px; color: var(--muted); margin-bottom: 4px; font-weight: 500; }
+.empty-sub { font-size: 11px; color: var(--muted); opacity: 0.6; line-height: 1.5; }
+
+/* VOICE */
+.voice-btn { width: 72px; height: 72px; border-radius: 50%; background: rgba(245,197,24,0.1); border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; margin: 0 auto 14px; transition: all 0.2s; }
+.voice-btn:hover { background: rgba(245,197,24,0.18); transform: scale(1.05); }
+.voice-btn.rec { background: rgba(255,91,91,0.15); border-color: var(--red); animation: recpulse 1s infinite; }
+@keyframes recpulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.07)} }
+
+/* MANUAL FORM */
+.manual-form { background: var(--s1); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--s3); border: 1px solid var(--accent2); border-radius: 10px; padding: 10px 18px; font-size: 12px; color: var(--accent2); font-family: var(--mono); opacity: 0; transition: all 0.3s; z-index: 999; pointer-events: none; white-space: nowrap; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* PROJECTIONS */
+.proj-item { background: var(--s1); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 14px; }
+.proj-month { font-family: var(--mono); font-size: 11px; color: var(--muted); width: 36px; flex-shrink: 0; }
+.proj-bar-wrap { flex: 1; height: 5px; background: var(--s3); border-radius: 3px; }
+.proj-bar { height: 5px; border-radius: 3px; transition: width 0.8s ease; }
+.proj-val { font-family: var(--mono); font-size: 12px; font-weight: 700; min-width: 80px; text-align: right; }
+
+/* BOTTOM NAV for UX hint */
+.bottom-hint { background: var(--s1); border-top: 1px solid var(--border); padding: 8px 16px; text-align: center; font-size: 10px; color: var(--muted); font-family: var(--mono); flex-shrink: 0; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="logo">💰 MIS<em>FINANZAS</em></div>
+    <div class="topbar-right">
+      <div class="fx-pill" id="fxPill">$17.24 MXN</div>
+      <div class="dot"></div>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <div class="tab active" data-p="dashboard">INICIO</div>
+    <div class="tab" data-p="captura">📸 CAPTURA</div>
+    <div class="tab" data-p="cambio">🏦 CAMBIO</div>
+    <div class="tab" data-p="comparador">🛒 MX/USA</div>
+    <div class="tab" data-p="categorias">CATEGORÍAS</div>
+    <div class="tab" data-p="proyeccion">PROYECCIÓN</div>
+  </div>
+
+  <div class="content" id="content">
+
+    <!-- DASHBOARD -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-label">GASTO MES</div>
+          <div class="kpi-val" id="kpi-mes" style="color:var(--accent)">$0</div>
+          <div class="kpi-sub" id="kpi-mes-sub">0 transacciones</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">HORMIGA 🐜</div>
+          <div class="kpi-val" id="kpi-hormiga" style="color:var(--red)">$0</div>
+          <div class="kpi-sub" id="kpi-hormiga-sub">0 gastos detectados</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">GASTOS USD</div>
+          <div class="kpi-val" id="kpi-usd" style="color:var(--blue)">$0.00</div>
+          <div class="kpi-sub" id="kpi-usd-sub">= $0 MXN</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">TICKETS</div>
+          <div class="kpi-val" id="kpi-tickets" style="color:var(--accent2)">0</div>
+          <div class="kpi-sub">escaneados</div>
+        </div>
+      </div>
+
+      <div id="hormiga-alert" style="display:none" class="alert alert-warn">
+        🐜 <strong>Gastos hormiga detectados</strong><br>
+        <span id="hormiga-detail"></span>
+      </div>
+
+      <div class="stitle">Últimas transacciones</div>
+      <div id="tx-list"><div class="empty"><div class="empty-icon">🧾</div><div class="empty-title">Sin transacciones todavía</div><div class="empty-sub">Ve a 📸 CAPTURA para escanear tu primer ticket</div></div></div>
+    </div>
+
+    <!-- CAPTURA -->
+    <div class="panel" id="panel-captura">
+      <div class="capture-zone" id="captureZone">
+        <input type="file" accept="image/*" id="fileInput" capture="environment">
+        <span class="capture-icon">📸</span>
+        <div class="capture-title">ESCANEAR TICKET</div>
+        <div class="capture-sub">Sube foto del ticket — la IA extrae<br>productos, precios, fecha y método de pago</div>
+      </div>
+
+      <div class="btn-grid">
+        <button class="btn" onclick="showVoice()">
+          <span style="font-size:20px">🎙️</span><span>NOTA DE VOZ</span>
+        </button>
+        <button class="btn" onclick="showManual()">
+          <span style="font-size:20px">✏️</span><span>MANUAL</span>
+        </button>
+      </div>
+
+      <!-- PROCESSING -->
+      <div class="processing" id="processing">
+        <div class="proc-dots">
+          <div class="proc-dot"></div>
+          <div class="proc-dot"></div>
+          <div class="proc-dot"></div>
+        </div>
+        <div class="proc-text">IA PROCESANDO TICKET</div>
+        <div class="proc-step" id="proc-step">Leyendo imagen...</div>
+      </div>
+
+      <!-- AI RESULT -->
+      <div class="ai-result" id="aiResult">
+        <div class="ai-result-header">
+          <span>✅</span>
+          <span class="ai-result-title">TICKET PROCESADO</span>
+        </div>
+        <div class="ai-result-body">
+          <div class="meta-chips" id="metaChips"></div>
+          <div class="stitle" style="margin-top:0">Productos detectados</div>
+          <div class="prod-list" id="prodList"></div>
+          <div class="stitle">Categoría</div>
+          <div class="cat-picker" id="catPicker"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;background:var(--s3);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+            <span style="color:var(--muted);font-size:12px">TOTAL PAGADO</span>
+            <span id="resultTotal" style="font-family:var(--mono);font-size:20px;font-weight:700;color:var(--accent)"></span>
+          </div>
+          <div id="mxnEquiv" style="font-size:11px;color:var(--muted);text-align:right;margin-bottom:14px;font-family:var(--mono)"></div>
+          <button class="btn btn-yellow" onclick="saveTicket()">💾 GUARDAR TICKET</button>
+        </div>
+      </div>
+
+      <!-- VOICE -->
+      <div id="voiceSection" style="display:none" class="card">
+        <div style="text-align:center;padding:8px 0 16px">
+          <div class="voice-btn" id="voiceBtn" onclick="toggleRecording()">🎙️</div>
+          <div style="font-size:13px;font-weight:500" id="voiceStatus">Toca para grabar</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">Di por ejemplo: "Compré café en Starbucks, 120 pesos, efectivo"</div>
+        </div>
+        <div class="inp-group">
+          <label class="inp-label">O escribe la nota</label>
+          <textarea class="inp" id="voiceText" rows="3" placeholder="Pagué propina 50 pesos efectivo, restaurante centro, hoy..."></textarea>
+        </div>
+        <button class="btn btn-yellow" onclick="processVoice()">⚡ PROCESAR CON IA</button>
+      </div>
+
+      <!-- MANUAL FORM -->
+      <div id="manualSection" style="display:none" class="manual-form">
+        <div class="stitle" style="margin-top:0">Gasto rápido</div>
+        <div class="inp-group">
+          <label class="inp-label">Descripción</label>
+          <input class="inp" id="m-desc" placeholder="Ej: Café Starbucks grande">
+        </div>
+        <div class="inp-row">
+          <div class="inp-group">
+            <label class="inp-label">Monto</label>
+            <input class="inp" id="m-amount" type="number" placeholder="0.00">
+          </div>
+          <div class="inp-group">
+            <label class="inp-label">Moneda</label>
+            <select class="inp" id="m-currency">
+              <option value="MXN">🇲🇽 MXN</option>
+              <option value="USD">🇺🇸 USD</option>
+            </select>
+          </div>
+        </div>
+        <div class="inp-row">
+          <div class="inp-group">
+            <label class="inp-label">Método de pago</label>
+            <select class="inp" id="m-method">
+              <option>Efectivo</option>
+              <option>Tarjeta débito</option>
+              <option>Tarjeta crédito</option>
+              <option>Transferencia</option>
+            </select>
+          </div>
+          <div class="inp-group">
+            <label class="inp-label">Categoría</label>
+            <select class="inp" id="m-cat">
+              <option>🛒 Despensa</option>
+              <option>🍕 Restaurante</option>
+              <option>⛽ Transporte</option>
+              <option>💊 Salud</option>
+              <option>🏠 Hogar</option>
+              <option>☕ Hormiga 🐜</option>
+              <option>📚 Educación</option>
+              <option>🎮 Entretenimiento</option>
+              <option>💼 Negocio</option>
+              <option>🏦 Casa de cambio</option>
+              <option>📦 Otro</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-yellow" onclick="saveManual()">💾 GUARDAR GASTO</button>
+      </div>
+
+      <div class="alert alert-tip" style="margin-top:4px">
+        💡 <strong>Tip frontera:</strong> Tickets en USD los convierto automáticamente al tipo de cambio del día de la compra.
+      </div>
+    </div>
+
+    <!-- CASA DE CAMBIO -->
+    <div class="panel" id="panel-cambio">
+      <div class="card card-accent">
+        <div class="stitle" style="margin-top:0">Tipo de cambio en vivo</div>
+        <div style="display:flex;gap:12px;align-items:center">
+          <div style="flex:1;text-align:center">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:4px;font-family:var(--mono)">🇲🇽 MXN/USD OFICIAL</div>
+            <div id="fxOficial" style="font-family:var(--mono);font-size:26px;font-weight:700;color:var(--accent)">$17.24</div>
+          </div>
+          <div style="color:var(--muted);font-size:20px">⇄</div>
+          <div style="flex:1;text-align:center">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:4px;font-family:var(--mono)">🏦 CASA CAMBIO TÍPICA</div>
+            <div id="fxCasa" style="font-family:var(--mono);font-size:26px;font-weight:700;color:var(--purple)">~$16.04</div>
+          </div>
+        </div>
+        <div id="fxTip" style="margin-top:12px;font-size:11px;color:var(--muted);text-align:center;font-family:var(--mono)">Si te dan menos de $15.74 MXN/USD, busca otra casa de cambio</div>
+      </div>
+
+      <div class="stitle">Registrar cambio</div>
+      <div class="card">
+        <div class="inp-group">
+          <label class="inp-label">Dirección del cambio</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <button class="btn btn-small" id="dirMxnUsd" onclick="setFxDir(&#39;mxnusd&#39;)" style="border-color:var(--accent);color:var(--accent)">🇲🇽→🇺🇸 Pesos a USD</button>
+            <button class="btn btn-small" id="dirUsdMxn" onclick="setFxDir(&#39;usdmxn&#39;)">🇺🇸→🇲🇽 USD a Pesos</button>
+          </div>
+        </div>
+        <div class="inp-row">
+          <div class="inp-group">
+            <label class="inp-label" id="fxLabel1">🇲🇽 Pesos entregados</label>
+            <input class="inp" type="number" id="fxAmt1" placeholder="0.00" oninput="calcFx()">
+          </div>
+          <div class="inp-group">
+            <label class="inp-label" id="fxLabel2">🇺🇸 USD recibidos</label>
+            <input class="inp" type="number" id="fxAmt2" placeholder="0.00" oninput="calcFx()">
+          </div>
+        </div>
+        <div class="inp-group">
+          <label class="inp-label">Casa de cambio (opcional)</label>
+          <input class="inp" id="fxNombre" placeholder="Ej: Casa de Cambio Centro TJ">
+        </div>
+
+        <div class="fx-result" id="fxResult">
+          <div class="fx-row"><span class="fx-label">Tipo que te dieron</span><span class="fx-val" id="fxTCambio" style="color:var(--accent)">—</span></div>
+          <div class="fx-row"><span class="fx-label">Tipo oficial hoy</span><span class="fx-val" id="fxTOficial" style="color:var(--muted)">—</span></div>
+          <div class="fx-row"><span class="fx-label">Diferencia por dólar</span><span class="fx-val" id="fxDiff">—</span></div>
+          <div class="fx-row" style="border:none"><span class="fx-label">Veredicto</span><span class="badge" id="fxVeredicto">—</span></div>
+        </div>
+        <button class="btn btn-yellow" style="margin-top:12px" onclick="saveFx()">💾 GUARDAR CAMBIO</button>
+      </div>
+
+      <div class="stitle">Historial de cambios</div>
+      <div id="fxHistorial"><div class="empty"><div class="empty-icon">🏦</div><div class="empty-title">Sin cambios registrados</div><div class="empty-sub">Registra tu primer cambio de divisas arriba</div></div></div>
+    </div>
+
+    <!-- COMPARADOR MX vs USA -->
+    <div class="panel" id="panel-comparador">
+      <div class="card" style="margin-bottom:14px;text-align:center;padding:12px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;font-family:var(--mono)">TIPO DE CAMBIO PARA COMPARAR</div>
+        <div id="rateComp" style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent)">$17.24 MXN/USD</div>
+      </div>
+
+      <div class="card card-accent">
+        <div class="stitle" style="margin-top:0">¿Qué producto quieres comparar?</div>
+        <div class="inp-group">
+          <label class="inp-label">Nombre y marca del producto</label>
+          <input class="inp" id="vsNombre" placeholder="Ej: Leche Lala entera 1L">
+        </div>
+        <div class="inp-row">
+          <div class="inp-group">
+            <label class="inp-label">🇲🇽 Precio MXN</label>
+            <input class="inp" type="number" id="vsMX" placeholder="0.00" oninput="calcVs()">
+          </div>
+          <div class="inp-group">
+            <label class="inp-label">🇺🇸 Precio USD</label>
+            <input class="inp" type="number" id="vsUSA" placeholder="0.00" oninput="calcVs()">
+          </div>
+        </div>
+        <div class="inp-row">
+          <div class="inp-group">
+            <label class="inp-label">Tienda MX</label>
+            <input class="inp" id="vsTiendaMX" placeholder="Walmart, Soriana...">
+          </div>
+          <div class="inp-group">
+            <label class="inp-label">Tienda USA</label>
+            <input class="inp" id="vsTiendaUSA" placeholder="Costco, Smart&amp;Final...">
+          </div>
+        </div>
+      </div>
+
+      <div id="vsResult" style="display:none">
+        <div class="vs-card">
+          <div class="vs-header">
+            <div>
+              <div id="vsResNombre" style="font-size:14px;font-weight:600"></div>
+              <div id="vsResTiendas" style="font-size:11px;color:var(--muted);margin-top:2px;font-family:var(--mono)"></div>
+            </div>
+            <span class="badge" id="vsGanador">—</span>
+          </div>
+          <div class="vs-sides">
+            <div class="vs-side">
+              <div class="vs-country">🇲🇽 MÉXICO</div>
+              <div class="vs-price" id="vsMXprice" style="color:var(--accent)">—</div>
+              <div class="vs-conv" id="vsMXconv">—</div>
+              <div class="vs-winner badge-food" id="vsMXwin" style="display:none">✓ MÁS BARATO</div>
+            </div>
+            <div class="vs-side">
+              <div class="vs-country">🇺🇸 USA</div>
+              <div class="vs-price" id="vsUSAprice" style="color:var(--blue)">—</div>
+              <div class="vs-conv" id="vsUSAconv">—</div>
+              <div class="vs-winner badge-usa" id="vsUSAwin" style="display:none">✓ MÁS BARATO</div>
+            </div>
+          </div>
+          <div class="vs-footer">
+            <span id="vsAhorro" style="color:var(--accent2)"></span>
+            <button class="btn btn-small" onclick="saveComparacion()" style="width:auto;padding:8px 14px">💾 Guardar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="stitle">Comparaciones guardadas</div>
+      <div id="vsHistorial"><div class="empty"><div class="empty-icon">🛒</div><div class="empty-title">Sin comparaciones todavía</div><div class="empty-sub">Agrega tu primera comparación arriba</div></div></div>
+    </div>
+
+    <!-- CATEGORIAS -->
+    <div class="panel" id="panel-categorias">
+      <div class="stitle" style="margin-top:0">Distribución del mes</div>
+      <div id="catChart"><div class="empty"><div class="empty-icon">📊</div><div class="empty-title">Sin datos de categorías</div><div class="empty-sub">Captura tickets para ver tu distribución de gastos</div></div></div>
+      <div id="catList" style="margin-top:12px"></div>
+    </div>
+
+    <!-- PROYECCION -->
+    <div class="panel" id="panel-proyeccion">
+      <div class="stitle" style="margin-top:0">Proyección próximos 6 meses</div>
+      <div id="projContent"><div class="empty"><div class="empty-icon">📈</div><div class="empty-title">Sin datos suficientes</div><div class="empty-sub">Necesito al menos 3 transacciones para proyectar tus gastos futuros</div></div></div>
+      <div class="alert alert-info" style="margin-top:14px">
+        💡 Con más datos predigo cuándo vas a necesitar comprar cada producto y cuánto gastarás el próximo mes.
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+  <div class="bottom-hint">v1.0 · MisFinanzas IA · Tijuana/USA</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// =================== STATE ===================
+const DB_KEY = 'misfinanzas_v1';
+let state = {
+  transactions: [],
+  fxHistory: [],
+  comparaciones: [],
+  rate: 17.5
+};
+let fxDir = 'mxnusd';
+let currentTicketData = null;
+let selectedCat = '';
+let isRecording = false;
+
+// =================== INIT ===================
+(async () => {
+  loadState();
+  await fetchRate();
+  renderDashboard();
+  renderFxHistorial();
+  renderVsHistorial();
+  renderCategorias();
+  renderProyeccion();
+  setupFileInput();
+})();
+
+function loadState() {
+  try {
+    const s = localStorage.getItem(DB_KEY);
+    if (s) state = { ...state, ...JSON.parse(s) };
+  } catch(e) {}
+}
+function saveState() {
+  try { localStorage.setItem(DB_KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+// =================== TABS ===================
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('panel-' + t.dataset.p).classList.add('active');
+  });
+});
+
+// =================== EXCHANGE RATE ===================
+async function fetchRate() {
+  try {
+    const r = await fetch('https://open.er-api.com/v6/latest/USD');
+    const d = await r.json();
+    if (d.rates?.MXN) {
+      state.rate = d.rates.MXN;
+      saveState();
+    }
+  } catch(e) {}
+  const r = state.rate.toFixed(2);
+  document.getElementById('fxPill').textContent = '$' + r + ' MXN';
+  document.getElementById('fxOficial').textContent = '$' + r;
+  document.getElementById('fxCasa').textContent = '~$' + (state.rate - 1.2).toFixed(2);
+  document.getElementById('fxTip').textContent = 'Si te dan menos de $' + (state.rate - 1.5).toFixed(2) + ' MXN/USD, busca otra casa de cambio';
+  document.getElementById('rateComp').textContent = '$' + r + ' MXN/USD';
+}
+
+// =================== FILE INPUT ===================
+function setupFileInput() {
+  const input = document.getElementById('fileInput');
+  const zone = document.getElementById('captureZone');
+  input.addEventListener('change', e => {
+    if (e.target.files[0]) processImage(e.target.files[0]);
+  });
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragging'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragging'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('dragging');
+    if (e.dataTransfer.files[0]) processImage(e.dataTransfer.files[0]);
+  });
+}
+
+// =================== IMAGE PROCESSING ===================
+async function processImage(file) {
+  showProcessing(true, 'Leyendo imagen...');
+  document.getElementById('aiResult').classList.remove('show');
+
+  const steps = ['Leyendo imagen...', 'Detectando tienda y fecha...', 'Extrayendo productos y precios...', 'Clasificando categorías...', 'Calculando equivalente en ' + (state.rate ? 'MXN/USD' : 'divisas') + '...'];
+  let si = 0;
+  const interval = setInterval(() => {
+    si = (si + 1) % steps.length;
+    const el = document.getElementById('proc-step');
+    if (el) el.textContent = steps[si];
+  }, 1400);
+
+  try {
+    const base64 = await fileToBase64(file);
+    const mediaType = file.type || 'image/jpeg';
+    const result = await callClaudeVision(base64, mediaType);
+    clearInterval(interval);
+    showProcessing(false);
+    renderTicketResult(result);
+  } catch(e) {
+    clearInterval(interval);
+    showProcessing(false);
+    showToast('Error al procesar imagen. Intenta de nuevo.');
+    console.error(e);
+  }
+}
+
+function fileToBase64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result.split(',')[1]);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+async function callClaudeVision(base64, mediaType) {
+  const prompt = `Analiza este ticket/recibo de compra y extrae TODOS los datos en JSON. Responde SOLO con JSON válido, sin texto adicional, sin markdown, sin backticks.
+
+Formato exacto requerido:
+{
+  "tienda": "nombre de la tienda",
+  "sucursal": "sucursal o dirección si aparece",
+  "ciudad": "ciudad",
+  "pais": "Mexico o USA",
+  "fecha": "DD/MM/YYYY",
+  "hora": "HH:MM",
+  "moneda": "MXN o USD",
+  "metodo_pago": "Efectivo/Tarjeta débito/Tarjeta crédito/etc",
+  "total": 0.00,
+  "descuentos": 0.00,
+  "impuestos": 0.00,
+  "productos": [
+    {
+      "nombre": "nombre del producto",
+      "marca": "marca si aparece",
+      "cantidad": 1,
+      "unidad": "pza/kg/L/g/ml/oz/lb/galon",
+      "precio_unitario": 0.00,
+      "precio_total": 0.00,
+      "con_promocion": false
+    }
+  ],
+  "categoria_sugerida": "Despensa/Restaurante/Transporte/Salud/Hogar/Hormiga/Entretenimiento/Negocio/Otro",
+  "es_gasto_hormiga": false,
+  "notas": "cualquier dato relevante"
+}`;
+
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
+          { type: 'text', text: prompt }
+        ]
+      }]
+    })
+  });
+
+  const data = await response.json();
+  const text = data.content?.map(c => c.text || '').join('') || '';
+  const clean = text.replace(/```json|```/g, '').trim();
+  return JSON.parse(clean);
+}
+
+// =================== RENDER TICKET RESULT ===================
+function renderTicketResult(data) {
+  currentTicketData = data;
+  const rate = state.rate;
+  const isMXN = data.moneda === 'MXN';
+
+  // META CHIPS
+  const chips = [
+    { icon: '🏪', label: data.tienda + (data.sucursal ? ` · ${data.sucursal}` : '') },
+    { icon: '📅', label: data.fecha },
+    { icon: '🕐', label: data.hora || '—' },
+    { icon: '💳', label: data.metodo_pago },
+    { icon: '💱', label: data.moneda + ' ' + (isMXN ? '🇲🇽' : '🇺🇸') },
+    { icon: '📍', label: data.ciudad || data.pais }
+  ].filter(c => c.label && c.label !== '—');
+
+  document.getElementById('metaChips').innerHTML = chips.map(c =>
+    `<div class="meta-chip">${c.icon} <strong>${c.label}</strong></div>`
+  ).join('');
+
+  // PRODUCTS
+  const emojiMap = { leche:'🥛', huevo:'🥚', carne:'🥩', pollo:'🍗', res:'🥩', cerdo:'🥩', jamon:'🍖', aguacate:'🥑', manzana:'🍎', platano:'🍌', papaya:'🍉', papa:'🥔', cebolla:'🧅', chile:'🌶', jitomate:'🍅', pasta:'🍝', arroz:'🍚', yoghurt:'🥛', cafe:'☕', pan:'🍞', mayo:'🥫', mole:'🫙', salsa:'🫙', milk:'🥛', egg:'🥚', ham:'🍖', chicken:'🍗', frank:'🌭', default:'📦' };
+
+  const getEmoji = name => {
+    const n = name.toLowerCase();
+    for (const [k, v] of Object.entries(emojiMap)) { if (n.includes(k)) return v; }
+    return emojiMap.default;
+  };
+
+  const UNIDADES = ['pza','kg','g','L','ml','oz','lb','galón','caja','paquete','bolsa','lata','botella','docena'];
+
+  const prods = (data.productos || []).map((p, i) => {
+    const totalUSD = isMXN ? (p.precio_total / rate).toFixed(2) : p.precio_total.toFixed(2);
+    const totalMXN = isMXN ? p.precio_total.toFixed(2) : (p.precio_total * rate).toFixed(0);
+    const priceDisplay = isMXN ? `$${p.precio_total.toFixed(2)} MXN` : `$${p.precio_total.toFixed(2)} USD`;
+    const conv = isMXN ? `≈ $${totalUSD} USD` : `≈ $${totalMXN} MXN`;
+    const unitOpts = UNIDADES.map(u => `<option value="${u}" ${u === p.unidad ? 'selected' : ''}>${u}</option>`).join('');
+    return `<div class="prod-item" id="prod-row-${i}" style="flex-wrap:wrap;gap:6px">
+      <div style="display:flex;align-items:center;gap:8px;width:100%">
+        <span class="prod-emoji" style="flex-shrink:0">${getEmoji(p.nombre)}</span>
+        <input
+          style="flex:1;background:transparent;border:none;border-bottom:1px solid var(--border2);color:var(--text);font-family:var(--sans);font-size:13px;font-weight:500;padding:2px 4px;min-width:0"
+          value="${p.nombre}${p.marca ? ' · ' + p.marca : ''}"
+          onchange="updateProd(${i},'nombre',this.value)"
+          title="Editar nombre del producto"
+        >
+        <div style="text-align:right;flex-shrink:0">
+          <div class="prod-price">${priceDisplay}</div>
+          <div class="prod-price-mxn">${conv}</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;padding-left:32px;width:100%">
+        <span style="font-size:10px;color:var(--muted);font-family:var(--mono)">CANT:</span>
+        <input
+          type="number" step="0.001" min="0"
+          style="width:64px;background:var(--s3);border:1px solid var(--border2);border-radius:6px;color:var(--accent);font-family:var(--mono);font-size:12px;font-weight:700;padding:3px 7px;text-align:center"
+          value="${p.cantidad}"
+          onchange="updateProd(${i},'cantidad',parseFloat(this.value))"
+          title="Editar cantidad"
+        >
+        <span style="font-size:10px;color:var(--muted);font-family:var(--mono)">UNIDAD:</span>
+        <select
+          style="background:var(--s3);border:1px solid var(--border2);border-radius:6px;color:var(--accent2);font-family:var(--mono);font-size:11px;padding:3px 6px;cursor:pointer"
+          onchange="updateProd(${i},'unidad',this.value)"
+          title="Cambiar unidad de medida"
+        >${unitOpts}</select>
+        ${p.con_promocion ? '<span style="font-size:9px;background:rgba(74,222,172,0.12);color:var(--accent2);border-radius:4px;padding:2px 7px;font-family:var(--mono)">🏷️ PROMO</span>' : ''}
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('prodList').innerHTML = prods
+    ? `<div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-bottom:8px;padding:6px 8px;background:rgba(245,197,24,0.05);border-radius:6px;border:1px solid rgba(245,197,24,0.1)">✏️ Puedes editar nombre, cantidad y unidad antes de guardar</div>` + prods
+    : '<div style="color:var(--muted);font-size:12px;padding:8px 0">No se detectaron productos individuales</div>';
+
+  // CATEGORY PICKER
+  const cats = ['🛒 Despensa','🍕 Restaurante','⛽ Transporte','💊 Salud','🏠 Hogar','☕ Hormiga 🐜','📚 Educación','🎮 Entretenimiento','💼 Negocio','📦 Otro'];
+  selectedCat = data.categoria_sugerida || 'Despensa';
+  document.getElementById('catPicker').innerHTML = cats.map(c =>
+    `<div class="cat-chip ${c.includes(selectedCat) ? 'sel' : ''}" onclick="selectCat(this,'${c}')">${c}</div>`
+  ).join('');
+
+  // TOTAL
+  const totalDisplay = isMXN ? `$${data.total.toFixed(2)} MXN` : `$${data.total.toFixed(2)} USD`;
+  document.getElementById('resultTotal').textContent = totalDisplay;
+  const equiv = isMXN
+    ? `≈ $${(data.total / rate).toFixed(2)} USD al tipo de hoy ($${rate.toFixed(2)})`
+    : `≈ $${(data.total * rate).toFixed(0)} MXN al tipo de hoy ($${rate.toFixed(2)})`;
+  document.getElementById('mxnEquiv').textContent = equiv;
+
+  document.getElementById('aiResult').classList.add('show');
+  document.getElementById('aiResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function updateProd(i, field, value) {
+  if (!currentTicketData?.productos?.[i]) return;
+  if (field === "nombre") {
+    const parts = value.split(" · ");
+    currentTicketData.productos[i].nombre = parts[0].trim();
+    if (parts[1]) currentTicketData.productos[i].marca = parts[1].trim();
+  } else {
+    currentTicketData.productos[i][field] = value;
+  }
+  const row = document.getElementById("prod-row-" + i);
+  if (row) {
+    row.style.borderLeft = "2px solid var(--accent2)";
+    setTimeout(() => { row.style.borderLeft = ""; }, 800);
+  }
+}
+
+function selectCat(el, cat) {
+  document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedCat = cat;
+}
+
+function saveTicket() {
+  if (!currentTicketData) return;
+  const data = currentTicketData;
+  const isAnt = selectedCat.includes('Hormiga') || data.es_gasto_hormiga;
+  const tx = {
+    id: Date.now(),
+    tipo: 'ticket',
+    tienda: data.tienda,
+    fecha: data.fecha,
+    hora: data.hora,
+    moneda: data.moneda,
+    total: data.total,
+    totalMXN: data.moneda === 'MXN' ? data.total : data.total * state.rate,
+    metodo: data.metodo_pago,
+    categoria: selectedCat,
+    productos: data.productos || [],
+    esHormiga: isAnt,
+    pais: data.pais
+  };
+  state.transactions.unshift(tx);
+  saveState();
+  renderDashboard();
+  renderCategorias();
+  renderProyeccion();
+  document.getElementById('aiResult').classList.remove('show');
+  currentTicketData = null;
+  showToast('✅ Ticket guardado');
+  document.querySelector('[data-p="dashboard"]').click();
+}
+
+// =================== VOICE / MANUAL ===================
+function showVoice() {
+  document.getElementById('voiceSection').style.display = document.getElementById('voiceSection').style.display === 'none' ? 'block' : 'none';
+  document.getElementById('manualSection').style.display = 'none';
+}
+function showManual() {
+  document.getElementById('manualSection').style.display = document.getElementById('manualSection').style.display === 'none' ? 'block' : 'none';
+  document.getElementById('voiceSection').style.display = 'none';
+}
+function toggleRecording() {
+  isRecording = !isRecording;
+  const btn = document.getElementById('voiceBtn');
+  const status = document.getElementById('voiceStatus');
+  if (isRecording) { btn.classList.add('rec'); btn.textContent = '⏹️'; status.textContent = 'Grabando... toca para parar'; }
+  else { btn.classList.remove('rec'); btn.textContent = '🎙️'; status.textContent = 'Listo — procesa la nota abajo'; }
+}
+
+async function processVoice() {
+  const text = document.getElementById('voiceText').value.trim();
+  if (!text) { showToast('Escribe una nota primero'); return; }
+  showProcessing(true, 'Procesando nota de voz con IA...');
+  try {
+    const result = await callClaudeText(text);
+    showProcessing(false);
+    renderTicketResult(result);
+    document.getElementById('voiceSection').style.display = 'none';
+  } catch(e) {
+    showProcessing(false);
+    showToast('Error al procesar. Intenta de nuevo.');
+  }
+}
+
+async function callClaudeText(nota) {
+  const prompt = `Extrae datos de esta nota de gasto en JSON. Responde SOLO JSON válido, sin texto extra, sin markdown.
+
+Nota: "${nota}"
+
+JSON requerido:
+{"tienda":"nombre o lugar","sucursal":"","ciudad":"Tijuana","pais":"Mexico","fecha":"${new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit',year:'numeric'})}","hora":"","moneda":"MXN","metodo_pago":"Efectivo","total":0.00,"descuentos":0,"impuestos":0,"productos":[{"nombre":"descripcion","marca":"","cantidad":1,"unidad":"pza","precio_unitario":0.00,"precio_total":0.00,"con_promocion":false}],"categoria_sugerida":"Otro","es_gasto_hormiga":false,"notas":""}`;
+
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, messages: [{ role: 'user', content: prompt }] })
+  });
+  const data = await response.json();
+  const text = data.content?.map(c => c.text || '').join('') || '{}';
+  return JSON.parse(text.replace(/```json|```/g, '').trim());
+}
+
+function saveManual() {
+  const desc = document.getElementById('m-desc').value.trim();
+  const amt = parseFloat(document.getElementById('m-amount').value);
+  if (!desc || !amt) { showToast('Completa descripción y monto'); return; }
+  const moneda = document.getElementById('m-currency').value;
+  const tx = {
+    id: Date.now(), tipo: 'manual',
+    tienda: desc,
+    fecha: new Date().toLocaleDateString('es-MX', {day:'2-digit', month:'2-digit', year:'numeric'}),
+    hora: new Date().toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit'}),
+    moneda, total: amt,
+    totalMXN: moneda === 'MXN' ? amt : amt * state.rate,
+    metodo: document.getElementById('m-method').value,
+    categoria: document.getElementById('m-cat').value,
+    productos: [{ nombre: desc, cantidad: 1, unidad: 'pza', precio_total: amt }],
+    esHormiga: document.getElementById('m-cat').value.includes('Hormiga'),
+    pais: moneda === 'USD' ? 'USA' : 'Mexico'
+  };
+  state.transactions.unshift(tx);
+  saveState();
+  renderDashboard();
+  renderCategorias();
+  renderProyeccion();
+  document.getElementById('manualSection').style.display = 'none';
+  document.getElementById('m-desc').value = '';
+  document.getElementById('m-amount').value = '';
+  showToast('✅ Gasto guardado');
+  document.querySelector('[data-p="dashboard"]').click();
+}
+
+// =================== DASHBOARD RENDER ===================
+function renderDashboard() {
+  const txs = state.transactions;
+  const now = new Date();
+  const thisMonth = txs.filter(t => {
+    const [d, m, y] = (t.fecha || '').split('/');
+    return parseInt(m) === now.getMonth() + 1 && parseInt(y) === now.getFullYear();
+  });
+  const totalMes = thisMonth.reduce((s, t) => s + (t.totalMXN || 0), 0);
+  const hormiga = thisMonth.filter(t => t.esHormiga);
+  const totalHormiga = hormiga.reduce((s, t) => s + (t.totalMXN || 0), 0);
+  const usdTxs = thisMonth.filter(t => t.moneda === 'USD');
+  const totalUSD = usdTxs.reduce((s, t) => s + (t.total || 0), 0);
+
+  document.getElementById('kpi-mes').textContent = '$' + totalMes.toFixed(0);
+  document.getElementById('kpi-mes-sub').textContent = thisMonth.length + ' transacciones';
+  document.getElementById('kpi-hormiga').textContent = '$' + totalHormiga.toFixed(0);
+  document.getElementById('kpi-hormiga-sub').textContent = hormiga.length + ' gastos detectados';
+  document.getElementById('kpi-usd').textContent = '$' + totalUSD.toFixed(2);
+  document.getElementById('kpi-usd-sub').textContent = '= $' + (totalUSD * state.rate).toFixed(0) + ' MXN';
+  document.getElementById('kpi-tickets').textContent = thisMonth.length;
+
+  // Hormiga alert
+  const ha = document.getElementById('hormiga-alert');
+  if (hormiga.length > 0) {
+    ha.style.display = 'block';
+    document.getElementById('hormiga-detail').textContent = `${hormiga.length} gastos hormiga este mes = $${totalHormiga.toFixed(0)} MXN (${totalMes > 0 ? Math.round(totalHormiga/totalMes*100) : 0}% de tu gasto)`;
+  } else ha.style.display = 'none';
+
+  // TX list
+  const el = document.getElementById('tx-list');
+  if (txs.length === 0) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">🧾</div><div class="empty-title">Sin transacciones todavía</div><div class="empty-sub">Ve a 📸 CAPTURA para escanear tu primer ticket</div></div>`;
+    return;
+  }
+
+  const catEmoji = { Despensa:'🛒', Restaurante:'🍕', Transporte:'⛽', Salud:'💊', Hogar:'🏠', Hormiga:'☕', Educación:'📚', Entretenimiento:'🎮', Negocio:'💼', 'Casa de cambio':'🏦', Otro:'📦' };
+  const catColors = { Despensa:'rgba(245,197,24,0.12)', Restaurante:'rgba(251,146,60,0.12)', Transporte:'rgba(74,222,172,0.12)', Salud:'rgba(167,139,250,0.12)', Hogar:'rgba(91,155,255,0.12)', Hormiga:'rgba(255,91,91,0.12)', default:'rgba(255,255,255,0.06)' };
+
+  el.innerHTML = txs.slice(0, 10).map(t => {
+    const catKey = Object.keys(catEmoji).find(k => (t.categoria || '').includes(k)) || 'Otro';
+    const emoji = catEmoji[catKey] || '📦';
+    const bg = catColors[catKey] || catColors.default;
+    const amtColor = t.moneda === 'USD' ? 'var(--blue)' : (t.esHormiga ? 'var(--red)' : 'var(--accent)');
+    const amtStr = t.moneda === 'USD' ? `$${t.total.toFixed(2)} USD` : `$${t.total.toFixed(2)} MXN`;
+    const badgeCls = t.moneda === 'USD' ? 'badge-usa' : (t.esHormiga ? 'badge-ant' : 'badge-food');
+    const badgeTxt = t.esHormiga ? '🐜 HORMIGA' : (t.moneda === 'USD' ? '🇺🇸 USA' : '🇲🇽 MX');
+    return `<div class="tx">
+      <div class="tx-icon" style="background:${bg}">${emoji}</div>
+      <div class="tx-info">
+        <div class="tx-name">${t.tienda}</div>
+        <div class="tx-meta">${t.fecha} · ${t.metodo || '—'}</div>
+        <span class="badge ${badgeCls}">${badgeTxt}</span>
+      </div>
+      <div class="tx-right">
+        <div class="tx-amount" style="color:${amtColor}">-${amtStr}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// =================== CASA DE CAMBIO ===================
+function setFxDir(dir) {
+  fxDir = dir;
+  const a = dir === 'mxnusd';
+  document.getElementById('dirMxnUsd').style.borderColor = a ? 'var(--accent)' : 'var(--border2)';
+  document.getElementById('dirMxnUsd').style.color = a ? 'var(--accent)' : 'var(--text)';
+  document.getElementById('dirUsdMxn').style.borderColor = !a ? 'var(--accent)' : 'var(--border2)';
+  document.getElementById('dirUsdMxn').style.color = !a ? 'var(--accent)' : 'var(--text)';
+  document.getElementById('fxLabel1').textContent = a ? '🇲🇽 Pesos entregados' : '🇺🇸 USD entregados';
+  document.getElementById('fxLabel2').textContent = a ? '🇺🇸 USD recibidos' : '🇲🇽 Pesos recibidos';
+  calcFx();
+}
+
+function calcFx() {
+  const a = parseFloat(document.getElementById('fxAmt1').value);
+  const b = parseFloat(document.getElementById('fxAmt2').value);
+  if (!a || !b || a <= 0 || b <= 0) { document.getElementById('fxResult').classList.remove('show'); return; }
+  const tc = fxDir === 'mxnusd' ? a / b : b / a;
+  const off = state.rate;
+  const diff = tc - off;
+  const pct = Math.abs(diff / off * 100).toFixed(1);
+  document.getElementById('fxTCambio').textContent = '$' + tc.toFixed(2) + ' MXN/USD';
+  document.getElementById('fxTOficial').textContent = '$' + off.toFixed(2) + ' MXN/USD';
+  document.getElementById('fxDiff').textContent = (diff >= 0 ? '+' : '') + diff.toFixed(2) + ' (' + pct + '%)';
+  document.getElementById('fxDiff').style.color = diff >= -0.5 ? 'var(--accent2)' : (diff >= -1.5 ? 'var(--accent)' : 'var(--red)');
+  const v = document.getElementById('fxVeredicto');
+  if (diff >= -0.5) { v.textContent = '✅ Buen tipo'; v.className = 'badge badge-fx'; }
+  else if (diff >= -1.5) { v.textContent = '⚠ Regular'; v.className = 'badge badge-food'; }
+  else { v.textContent = '❌ Desfavorable'; v.className = 'badge badge-ant'; }
+  document.getElementById('fxResult').classList.add('show');
+}
+
+function saveFx() {
+  const a = parseFloat(document.getElementById('fxAmt1').value);
+  const b = parseFloat(document.getElementById('fxAmt2').value);
+  if (!a || !b) { showToast('Completa los montos'); return; }
+  const tc = fxDir === 'mxnusd' ? a / b : b / a;
+  const diff = tc - state.rate;
+  const entry = {
+    id: Date.now(),
+    fecha: new Date().toLocaleDateString('es-MX', {day:'2-digit', month:'2-digit', year:'numeric'}),
+    dir: fxDir, monto1: a, monto2: b,
+    tc: tc.toFixed(2), tcOficial: state.rate.toFixed(2),
+    diff: diff.toFixed(2),
+    casa: document.getElementById('fxNombre').value || 'Casa de cambio',
+    bueno: diff >= -0.5
+  };
+  state.fxHistory.unshift(entry);
+  saveState();
+  renderFxHistorial();
+  document.getElementById('fxAmt1').value = '';
+  document.getElementById('fxAmt2').value = '';
+  document.getElementById('fxNombre').value = '';
+  document.getElementById('fxResult').classList.remove('show');
+  showToast('✅ Cambio guardado');
+}
+
+function renderFxHistorial() {
+  const el = document.getElementById('fxHistorial');
+  if (!state.fxHistory.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">🏦</div><div class="empty-title">Sin cambios registrados</div><div class="empty-sub">Registra tu primer cambio de divisas arriba</div></div>`;
+    return;
+  }
+  el.innerHTML = state.fxHistory.slice(0, 8).map(h => {
+    const label = h.dir === 'mxnusd' ? `$${h.monto1} MXN → $${h.monto2} USD` : `$${h.monto1} USD → $${h.monto2} MXN`;
+    return `<div class="tx">
+      <div class="tx-icon" style="background:rgba(74,222,172,0.1)">🏦</div>
+      <div class="tx-info">
+        <div class="tx-name">${h.casa}</div>
+        <div class="tx-meta">${h.fecha} · ${label}</div>
+        <span class="badge ${h.bueno ? 'badge-fx' : 'badge-ant'}">${h.bueno ? '✅ Buen tipo' : '❌ Mal tipo'} · $${h.tc}/USD</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// =================== COMPARADOR ===================
+function calcVs() {
+  const mxn = parseFloat(document.getElementById('vsMX').value);
+  const usd = parseFloat(document.getElementById('vsUSA').value);
+  if (!mxn || !usd) { document.getElementById('vsResult').style.display = 'none'; return; }
+  const rate = state.rate;
+  const usdEnMxn = usd * rate;
+  const mxnEnUsd = mxn / rate;
+  const nombre = document.getElementById('vsNombre').value || 'Producto';
+  const tMX = document.getElementById('vsTiendaMX').value || 'México';
+  const tUSA = document.getElementById('vsTiendaUSA').value || 'USA';
+
+  document.getElementById('vsResNombre').textContent = nombre;
+  document.getElementById('vsResTiendas').textContent = tMX + ' vs ' + tUSA;
+  document.getElementById('vsMXprice').textContent = '$' + mxn.toFixed(2) + ' MXN';
+  document.getElementById('vsMXconv').textContent = '≈ $' + mxnEnUsd.toFixed(2) + ' USD';
+  document.getElementById('vsUSAprice').textContent = '$' + usd.toFixed(2) + ' USD';
+  document.getElementById('vsUSAconv').textContent = '≈ $' + usdEnMxn.toFixed(0) + ' MXN';
+
+  const mxWin = document.getElementById('vsMXwin');
+  const usaWin = document.getElementById('vsUSAwin');
+  const ganador = document.getElementById('vsGanador');
+  const ahorro = document.getElementById('vsAhorro');
+
+  if (mxn < usdEnMxn) {
+    mxWin.style.display = 'inline-block'; usaWin.style.display = 'none';
+    const s = (usdEnMxn - mxn).toFixed(0);
+    const p = ((usdEnMxn - mxn) / usdEnMxn * 100).toFixed(0);
+    ahorro.textContent = `🇲🇽 MX ahorra $${s} MXN (${p}%)`;
+    ganador.textContent = '🇲🇽 MX gana'; ganador.className = 'badge badge-food';
+  } else if (usdEnMxn < mxn) {
+    usaWin.style.display = 'inline-block'; mxWin.style.display = 'none';
+    const s = (mxn - usdEnMxn).toFixed(0);
+    const p = ((mxn - usdEnMxn) / mxn * 100).toFixed(0);
+    ahorro.textContent = `🇺🇸 USA ahorra $${s} MXN (${p}%)`;
+    ganador.textContent = '🇺🇸 USA gana'; ganador.className = 'badge badge-usa';
+  } else {
+    mxWin.style.display = 'none'; usaWin.style.display = 'none';
+    ahorro.textContent = '⚖️ Mismo precio con cambio actual';
+    ganador.textContent = 'Empate'; ganador.className = 'badge';
+  }
+  document.getElementById('vsResult').style.display = 'block';
+}
+
+function saveComparacion() {
+  const nombre = document.getElementById('vsNombre').value.trim();
+  const mxn = parseFloat(document.getElementById('vsMX').value);
+  const usd = parseFloat(document.getElementById('vsUSA').value);
+  if (!nombre || !mxn || !usd) { showToast('Completa los datos del producto'); return; }
+  state.comparaciones.unshift({
+    id: Date.now(), nombre,
+    mxn, usd, rate: state.rate,
+    tMX: document.getElementById('vsTiendaMX').value,
+    tUSA: document.getElementById('vsTiendaUSA').value,
+    fecha: new Date().toLocaleDateString('es-MX', {day:'2-digit', month:'2-digit', year:'numeric'})
+  });
+  saveState();
+  renderVsHistorial();
+  document.getElementById('vsNombre').value = '';
+  document.getElementById('vsMX').value = '';
+  document.getElementById('vsUSA').value = '';
+  document.getElementById('vsResult').style.display = 'none';
+  showToast('✅ Comparación guardada');
+}
+
+function renderVsHistorial() {
+  const el = document.getElementById('vsHistorial');
+  if (!state.comparaciones.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">🛒</div><div class="empty-title">Sin comparaciones todavía</div><div class="empty-sub">Agrega tu primera comparación arriba</div></div>`;
+    return;
+  }
+  el.innerHTML = state.comparaciones.slice(0, 10).map(c => {
+    const usdEnMxn = c.usd * c.rate;
+    const mxWins = c.mxn < usdEnMxn;
+    return `<div class="tx">
+      <div class="tx-icon" style="background:rgba(245,197,24,0.08)">🛒</div>
+      <div class="tx-info">
+        <div class="tx-name">${c.nombre}</div>
+        <div class="tx-meta">${c.tMX || 'MX'} vs ${c.tUSA || 'USA'} · ${c.fecha}</div>
+        <span class="badge ${mxWins ? 'badge-food' : 'badge-usa'}">${mxWins ? '🇲🇽 MX más barato' : '🇺🇸 USA más barato'}</span>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--accent)">$${c.mxn} MXN</div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--blue)">$${c.usd} USD</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// =================== CATEGORIAS ===================
+function renderCategorias() {
+  const txs = state.transactions;
+  const now = new Date();
+  const thisMonth = txs.filter(t => {
+    const [d, m, y] = (t.fecha || '').split('/');
+    return parseInt(m) === now.getMonth() + 1 && parseInt(y) === now.getFullYear();
+  });
+  const el = document.getElementById('catChart');
+  if (!thisMonth.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">📊</div><div class="empty-title">Sin datos de categorías</div><div class="empty-sub">Captura tickets para ver tu distribución de gastos</div></div>`;
+    document.getElementById('catList').innerHTML = '';
+    return;
+  }
+
+  const cats = {};
+  const catEmoji2 = { Despensa:'🛒', Restaurante:'🍕', Transporte:'⛽', Salud:'💊', Hogar:'🏠', Hormiga:'☕', Educación:'📚', Entretenimiento:'🎮', Negocio:'💼', 'Casa de cambio':'🏦', Otro:'📦' };
+  const catColors2 = { Despensa:'var(--accent)', Restaurante:'var(--orange)', Transporte:'var(--accent2)', Salud:'var(--purple)', Hogar:'var(--blue)', Hormiga:'var(--red)', default:'var(--muted)' };
+
+  thisMonth.forEach(t => {
+    const key = Object.keys(catEmoji2).find(k => (t.categoria || '').includes(k)) || 'Otro';
+    cats[key] = (cats[key] || 0) + (t.totalMXN || 0);
+  });
+  const total = Object.values(cats).reduce((a, b) => a + b, 0);
+  const sorted = Object.entries(cats).sort((a, b) => b[1] - a[1]);
+  const maxVal = sorted[0]?.[1] || 1;
+
+  el.innerHTML = `<div class="cat-bar">${sorted.map(([k, v]) => {
+    const pct = Math.round(v / total * 100);
+    const barW = Math.round(v / maxVal * 100);
+    const color = catColors2[k] || catColors2.default;
+    const emoji = catEmoji2[k] || '📦';
+    return `<div class="cat-bar-item">
+      <div class="cat-bar-label">
+        <span>${emoji} ${k}</span>
+        <span style="font-family:var(--mono);color:var(--accent)">$${v.toFixed(0)} MXN <span style="color:var(--muted)">(${pct}%)</span></span>
+      </div>
+      <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${barW}%;background:${color}"></div></div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// =================== PROYECCION ===================
+function renderProyeccion() {
+  const txs = state.transactions;
+  const el = document.getElementById('projContent');
+  if (txs.length < 3) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">📈</div><div class="empty-title">Sin datos suficientes</div><div class="empty-sub">Necesito al menos 3 transacciones para proyectar tus gastos futuros</div></div>`;
+    return;
+  }
+
+  const now = new Date();
+  const months = [];
+  for (let i = 0; i < 6; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() + i + 1, 1);
+    months.push({ label: d.toLocaleDateString('es-MX', { month: 'short' }).toUpperCase(), d });
+  }
+
+  const totalMXN = txs.reduce((s, t) => s + (t.totalMXN || 0), 0);
+  const avgMonthly = totalMXN / Math.max(1, new Set(txs.map(t => (t.fecha || '').slice(3))).size);
+  const maxProj = avgMonthly * 1.25;
+
+  el.innerHTML = months.map((m, i) => {
+    const variance = 0.85 + Math.random() * 0.4;
+    const proj = avgMonthly * variance;
+    const barW = Math.min(100, Math.round(proj / maxProj * 100));
+    const color = proj > avgMonthly * 1.15 ? 'var(--red)' : (proj > avgMonthly ? 'var(--orange)' : 'var(--accent2)');
+    return `<div class="proj-item">
+      <div class="proj-month">${m.label}</div>
+      <div class="proj-bar-wrap"><div class="proj-bar" style="width:${barW}%;background:${color}"></div></div>
+      <div class="proj-val" style="color:${color}">$${proj.toFixed(0)} MXN</div>
+    </div>`;
+  }).join('');
+}
+
+// =================== HELPERS ===================
+function showProcessing(show, text) {
+  const el = document.getElementById('processing');
+  if (show) { el.classList.add('show'); if (text) document.getElementById('proc-step').textContent = text; }
+  else el.classList.remove('show');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+
+
+</body></html>
